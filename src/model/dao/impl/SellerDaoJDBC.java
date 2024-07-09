@@ -52,16 +52,8 @@ public class SellerDaoJDBC implements SellerDao{
 			st.setInt(1, id); //o primeiro elemento vai retornar no id
 			rs = st.executeQuery();
 			if (rs.next()) { //o if vai testar se veio algum resultado
-				Department dep = new Department();
-				dep.setId(rs.getInt("DepartmentId")); //aqui ele vai procurar no banco de dados o DepartmentId que retorna o numero 1
-				dep.setName(rs.getString("DepName")); //aqui ele vai procurar no banco de dados o DepartmentId que retorna o nome do departamento
-				Seller obj = new Seller();
-				obj.setId(rs.getInt("Id"));
-				obj.setName(rs.getString("Name"));
-				obj.setEmail(rs.getString("Email"));
-				obj.setBaseSalary(rs.getDouble("BaseSalary"));
-				obj.setBirthDate(rs.getDate("BirthDate"));
-				obj.setDepartment(dep);
+				Department dep = instantiateDepartment(rs);
+				Seller obj = instatiateSeller(rs, dep);
 				return obj;
 			}
 			return null;
@@ -74,6 +66,26 @@ public class SellerDaoJDBC implements SellerDao{
 			DB.closeResultSet(rs);
 		}
 	}
+
+	private Seller instatiateSeller(ResultSet rs, Department dep) throws SQLException { //método auxiliar
+		Seller obj = new Seller(); //até o final do if, esse código vai instaciar o vendedor
+		obj.setId(rs.getInt("Id"));
+		obj.setName(rs.getString("Name"));
+		obj.setEmail(rs.getString("Email"));
+		obj.setBaseSalary(rs.getDouble("BaseSalary"));
+		obj.setBirthDate(rs.getDate("BirthDate"));
+		obj.setDepartment(dep);
+		return obj;
+	}
+
+
+	private Department instantiateDepartment(ResultSet rs) throws SQLException {
+		Department dep = new Department(); //essa linha e as duas debaixo instanciam o departamento
+		dep.setId(rs.getInt("DepartmentId")); //aqui ele vai procurar no banco de dados o DepartmentId que retorna o numero 1
+		dep.setName(rs.getString("DepName")); //aqui ele vai procurar no banco de dados o DepartmentId que retorna o nome do departamento
+		return dep;
+	}
+
 
 	@Override
 	public List<Seller> findAll() {
